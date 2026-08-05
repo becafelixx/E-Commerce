@@ -7,14 +7,28 @@ import { PrecoFormatadoPipe } from '../../../shared/pipes/preco-formatado-pipe';
   templateUrl: './produto.html',
   styleUrl: './produto.css',
 })
+
 // adicionando variáveis e condicionais
 export class Produto {
   //Entrada de dados da lista Produtos em lista-produtos
   @Input() nome: string = '';
   @Input() preco: number = 0;
+
   //Saída de dados de Produtos selecionados para lista-produtos
   @Output() produtoSelecionado = new EventEmitter<string>();
 selecionarProduto() {
     this.produtoSelecionado.emit(this.nome);
   }
+
+  @Output() produtoAdicionado = new EventEmitter<{
+     nome: string; 
+     preco: number 
+    }>();
+
+    adicionarAoCarrinho() {
+      this.produtoAdicionado.emit({ 
+      nome: this.nome, 
+      preco: this.preco 
+    });
+}
 }
