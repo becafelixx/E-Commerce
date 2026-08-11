@@ -1,0 +1,7 @@
+<h2>Chekout</h2>
+<form [formGroup]= "formulario">
+  <p><input type = "text" formControlName = "nome" placeholder = "Digite seu nome completo"></p>
+  <p><input type = "text" formControlName = "email" placeholder = "Digite seu E-mail"></p>
+  <p><input type = "text" formControlName = "endereco" placeholder = "Digite seu Endereço"></p>
+  <button type = "button" (click) = "finalizar()">Finalizar compra</button>
+</form>
