@@ -29,5 +29,5 @@
     <small style="color: red;"> ENDEREÇO DEVE CONTER NO MÍNIMO (5) DUAS LETRAS</small>
    }
 <hr>
-  <button type = "button" (click) = "finalizar()">Finalizar compra</button>
+  <button type = "button" (click) = "finalizar()" [disabled]="formulario.invalid">Finalizar compra</button>
 </form>
