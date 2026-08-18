@@ -3,9 +3,19 @@
 <span>{{nomeLoja}}</span>
 <span class="flex-spacer"></span>
 
+
 <button mat-button routerLink="/">Início</button>
 <button mat-button routerLink="/produtos">Produtos</button>
 <button mat-button routerLink="/carrinho">Carrinho {{quantidadeHeader()}}</button>
 <button mat-button routerLink="/checkout">Checkout</button>
+<button mat-button routerLink="/admin">Admin</button>
+
+
+@if(usuarioLogado()){
+    <span class="email-usuario">{{usuarioAtual()?.email}}</span>
+    <button type="button" (click)="sair()">Sair</button>
+} @else {
+    <button mat-button routerLink="/login">Entrar</button>
+}
 
 </mat-toolbar>
