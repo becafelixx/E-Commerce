@@ -1,1 +1,33 @@
-<p>login works!</p>
+<h2>Login</h2>
+<p>Informe seus dados para autorizar a compra dos produtos</p>
+
+@if(!erroLogin()){
+    <p style="color: red;">Não foi possível realizar o login</p>
+}
+
+<form [formGroup]="formulario">
+     <p><input type="email" formControlName="email"  placeholder="E-mail"></p>
+
+    @if(formulario.get('email')?.touched && formulario.get('email')?.invalid){
+        @if(formulario.get('email')?.errors?.['required']){
+            <small style="color: red">E-MAIL É OBRIGATÓRIO</small>
+        }
+    }
+    @if(formulario.get('email')?.errors?.['email']){
+        <small style="color: red">E-MAIL INVÁLIDO</small>
+    }
+
+    <p><input type="password" formControlName="senha" placeholder="Senha"></p>
+
+    @if(formulario.get('senha')?.touched && formulario.get('senha')?.invalid){
+     @if(formulario.get('senha')?.errors?.['required']){
+        <small style="color: red">SENHA É OBRIGATÓRIO</small>
+     }
+
+    }
+    @if(formulario.get('senha')?.errors?.['minlength']){
+        <small style="color: red">SENHA DEVE CONTER NO MINIMO 6 CARACTERES</small>
+    }
+     
+<button type="button" (click)="entrar()" [disabled]="formulario.invalid">Entrar</button>
+</form>
