@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { CarrinhoService } from '../../../core/services/carrinho.service';
+import { CarrinhoFacade } from '../../../core/facades/carrinho.facade';
 import { PrecoFormatadoPipe } from '../../../shared/pipes/preco-formatado-pipe';
 
 @Component({
@@ -12,7 +12,7 @@ import { PrecoFormatadoPipe } from '../../../shared/pipes/preco-formatado-pipe';
 })
 export class Checkout {
   
-  carrinhoService = inject(CarrinhoService);
+  carrinhoFacade = inject(CarrinhoFacade);
 
   compraFinalizada = signal(false);
 
@@ -26,7 +26,7 @@ export class Checkout {
 
     this.compraFinalizada.set(false);
 
-    if(this.carrinhoService.carrinhoVazio()){
+    if(this.carrinhoFacade.carrinhoVazio()){
       console.log('Não é possível finalizar a compra com o carrinho vazio!');
       return;
     }
@@ -38,15 +38,15 @@ export class Checkout {
     }
 
     const dados = this.formulario.value
-    const itens = this.carrinhoService.itens();
-    const total = this.carrinhoService.totalItens();
+    const itens = this.carrinhoFacade.itensCarrinho();
+    const total = this.carrinhoFacade.totalCarrinho();
 
     console.log('Compra finalizada com sucesso!')
     console.log('Dados do Formulário: ', dados);
     console.log('Itens no Carrinho: ', itens);
     console.log('Total de compras: ', total);
 
-    this.carrinhoService.limpar();
+    this.carrinhoFacade.limparCarrinho();
     this.formulario.reset();
     this.compraFinalizada.set(true);
   }
