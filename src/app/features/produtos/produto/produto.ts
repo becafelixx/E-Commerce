@@ -3,6 +3,7 @@ import {UpperCasePipe, CurrencyPipe} from '@angular/common';
 import { PrecoFormatadoPipe } from '../../../shared/pipes/preco-formatado-pipe';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card'
+import { ItemCarrinho } from '../../../core/models/item-carrinho';
  
 @Component({
   selector: 'app-produto',
@@ -23,10 +24,7 @@ selecionarProduto() {
     this.produtoSelecionado.emit(this.nome);
   }
 
-  @Output() produtoAdicionado = new EventEmitter<{
-     nome: string; 
-     preco: number 
-    }>();
+  @Output() produtoAdicionado = new EventEmitter<ItemCarrinho>();
 
     adicionarAoCarrinho() {
       this.produtoAdicionado.emit({ 
