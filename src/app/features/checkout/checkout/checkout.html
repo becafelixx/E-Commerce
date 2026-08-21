@@ -1,18 +1,31 @@
 <h2>Checkout</h2>
-@if(compraFinalizada()){
-  
-  <p><strong> Compra finalizada com sucesso! 🤗​</strong></p>
-  <button mat-raised-button color="primary" 
-  type="button" routerLink="/produtos">Comprar mais</button>
+
+@if(pedidoFinalizado()){
+<section class="pedido-finalizado">
+<h3>PEDIDO FINALIZADO COM SUCESSO!</h3>
+
+<p><strong>Código: </strong>{{pedidoFinalizado()?.codigo}}</p>
+<p><strong>Cliente: </strong></p>{{pedidoFinalizado()?.cliente}}
+<p><strong>E-mail: </strong></p>{{pedidoFinalizado()?.email}}
+<p><strong>Itens comprados: </strong></p>{{pedidoFinalizado()?.quantidadeItens}}
+<p><strong>Total: </strong></p>{{pedidoFinalizado()?.total}}
+
+<hr>
+<button mat-raised-button color="primary" type="button" routerLink="/produtos">Fazer compras novamente</button>
+
+</section>
 }
-@if(carrinhoFacade.carrinhoVazio() && !compraFinalizada()){
-  <p style="color: red;"><strong>Seu carrinho está vazio! 🥺</strong></p>
-  <p style="color: red;">Adicione produtos antes de finalizar a compra!</p>
+
+@if(carrinhoFacade.carrinhoVazio() && !pedidoFinalizado()){
+  <section class="carrinho-vazio">
+  <h3>Seu carrinho está vazio! 🥺</h3>
+  <p>Adicione produtos antes de finalizar a compra!</p>
   <button mat-raised-button color="primary" type="button" 
   routerLink="/produtos">Ver produtos</button>
+  </section>
 
-}@else if (!compraFinalizada()) {
-  <section>
+}@else if (!pedidoFinalizado()) {
+  <section class="resumo-compra">
     <h3>Resumo da compra</h3>
 
     <p><strong>Itens do carrinho: </strong>{{carrinhoFacade.quantidadeCarrinho()}}</p>
