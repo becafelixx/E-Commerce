@@ -1,56 +1,107 @@
-import { Injectable, signal, computed } from "@angular/core";
+import { isPlatformBrowser } from '@angular/common';
+import { Injectable, computed, signal, inject, PLATFORM_ID } from '@angular/core';
 
-type PerfilUsuario = 'usuario' | 'admin'
+type PerfilUsuario = 'usuario' | 'admin';
 
-
-type Usuario ={
-    email: string;
-    perfil: PerfilUsuario;
-}
+type Usuario = {
+  email: string;
+  perfil: PerfilUsuario;
+};
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class AuthService {
-    private usuario  = signal <Usuario| null> (null);
-    private tokenJwt = signal <string | null> (null);
+  private platformId = inject(PLATFORM_ID);
 
-    //!COMPUTED
-    usuarioAtual = computed(()=> this.usuario());
-    usuarioLogado = computed(()=> this.usuario() !== null );
-    token = computed (()=> this.tokenJwt());
-    admin = computed(() => this.usuario()?.perfil === 'admin');
+  private readonly chaveUsuario = 'minha-loja-usuario';
+  private readonly chaveToken = 'minha-loja-token';
 
-    login(email: string, senha: string): boolean {
+  private usuario = signal<Usuario | null>(this.carregarUsuarioSalvo());
+  private tokenJwt = signal<string | null>(this.carregarTokenSalvo());
 
-        if(!email || !senha){
-            return false;
-        }
+  usuarioAtual = computed(() => this.usuario());
+  usuarioLogado = computed(() => this.usuario() !== null && this.tokenJwt() !== null);
+  admin = computed(() => this.usuario()?.perfil === 'admin');
+  token = computed(() => this.tokenJwt());
 
-        const perfil: PerfilUsuario = email === 'admin@email.com.br' ? 'admin' : 'usuario';
-        const tokenSimulado = 
-       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
-       'eyJzdWIiOiJhbHVub0B0ZXN0ZS5jb20iLCJwZXJmaWwiOiJ1c3VhcmlvIn0.' 
-       +'assinatura-simulada';
-       this.usuario.set({
-        email,
-        perfil,
-    });
+  login(email: string, senha: string): boolean {
+    if (!email || !senha) {
+      return false;
+    }
+
+    // Regra: e-mail perfil será admin: admin@email.com . Outro e-mail: usuario comum.
+    const perfil: PerfilUsuario = email === 'admin@email.com' ? 'admin' : 'usuario';
+
+    const usuarioLogado: Usuario = { email, perfil };
+
+    const tokenSimulado =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
+      'eyJzdWIiOiJhbHVub0B0ZXN0ZS5jb20iLCJwZXJmaWwiOiJ1c3VhcmlvIn0.' +
+      'assinatura-simulada';
+
+    this.usuario.set(usuarioLogado);
     this.tokenJwt.set(tokenSimulado);
+    this.salvarAutenticacao(usuarioLogado, tokenSimulado);
+
     return true;
+  }
 
+  logout() {
+    this.usuario.set(null);
+    this.tokenJwt.set(null);
+    this.limparAutenticacaoSalva();
+  }
+
+  obterToken(): string | null {
+    return this.tokenJwt();
+  }
+
+  obterPerfil(): PerfilUsuario | null {
+    return this.usuario()?.perfil ?? null;
+  }
+
+  private estaNoNavegador(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
+  private carregarUsuarioSalvo(): Usuario | null {
+    if (!this.estaNoNavegador()) {
+      return null;
+    }
+    const dadosSalvos = localStorage.getItem(this.chaveUsuario);
+
+    if (!dadosSalvos) {
+      return null;
     }
 
-    logout(){
-        this.usuario.set(null);
-        this.tokenJwt.set(null);
+    try {
+      return JSON.parse(dadosSalvos) as Usuario;
+    } catch {
+      return null;
     }
-    
-    obterToken(): string | null {
-        return this.tokenJwt();
+  }
+
+  private carregarTokenSalvo(): string | null {
+    if (!this.estaNoNavegador()) {
+      return null;
     }
-    obterPerfil(): PerfilUsuario | null{
-        return this.usuario()?.perfil ?? null;
+    return localStorage.getItem(this.chaveToken);
+  }
+
+  private salvarAutenticacao(usuario: Usuario, token: string) {
+    if (!this.estaNoNavegador()) {
+      return;
     }
+    localStorage.setItem(this.chaveUsuario, JSON.stringify(usuario));
+    localStorage.setItem(this.chaveToken, token);
+  }
+
+  private limparAutenticacaoSalva() {
+    if (!this.estaNoNavegador()) {
+      return;
+    }
+    localStorage.removeItem(this.chaveUsuario);
+    localStorage.removeItem(this.chaveToken);
+  }
 }
